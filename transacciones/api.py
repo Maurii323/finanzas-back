@@ -11,7 +11,7 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     # serializer
     serializer_class = CategoriaSerializer
 
-    # modifica el queryset(define qué registros de la base de datos deben ser accesibles) que se va a usar
+    # modifica el queryset que se va a usar, el cual define qué registros de la base de datos deben ser accesibles
     def get_queryset(self):
         # Devuelve las categorías del usuario autenticado o las generales(user=None).
         

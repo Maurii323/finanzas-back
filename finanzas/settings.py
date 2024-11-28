@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',   # añade el modulo de rest_framework
     'rest_framework_simplejwt',     # modulo para jwt
+    'corsheaders',      # configuracion de CORS
     'transacciones',
     'autenticacion'
 ]
@@ -61,6 +62,13 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
+# Permitir todos los orígenes configurando CORS
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Permitir envío de cookies o credenciales
+CORS_ALLOW_CREDENTIALS = True
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -69,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',    # configuracion de CORS
 ]
 
 ROOT_URLCONF = 'finanzas.urls'

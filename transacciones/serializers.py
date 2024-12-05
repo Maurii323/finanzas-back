@@ -6,14 +6,16 @@ class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria     #nombre del modelo
         # campos del modelo
-        fields = ('id','nombre','descripcion')
+        fields = ('id','user','nombre','descripcion')
 
 class TransaccionSerializer(serializers.ModelSerializer):
+    categoria = CategoriaSerializer(read_only=True)  # Usa el serializador de Categoria para mostrar detalles
+
     class Meta:
         model = Transaccion
-        fields = ('id','nombre','tipo','categoria','monto','descripcion')
-        read_only_fields = ('fecha',)    # campos solo para leer, no se pueden actualizar ni eliminar
-    
+        fields = ('id', 'user','nombre', 'tipo', 'categoria', 'monto', 'descripcion', 'fecha')
+        read_only_fields = ('fecha',)
+
     def validate_monto(self, value):
         if value <= 0:
             raise serializers.ValidationError("El monto debe ser un valor positivo.")

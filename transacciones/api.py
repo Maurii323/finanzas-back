@@ -32,7 +32,7 @@ class TransaccionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         #Devuelve las categorias relacionadas con el usuario autenticado.
         user = self.request.user 
-        return Categoria.objects.filter(user=user)  # Filtra las tareas por el usuario
+        return Transaccion.objects.filter(user=user)  # Filtra las tareas por el usuario
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

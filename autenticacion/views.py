@@ -24,7 +24,7 @@ class RegisterView(APIView):
             return Response({'error': 'Las contraseñas deben coincidir'}, status=status.HTTP_400_BAD_REQUEST)
         # Verificar si el username ya existe
         if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'El nombre de usuario ya existe'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Crea el lusuario luego de las validaciones y lo guarda
         user = User.objects.create_user(username=username, password=password1, email=email)

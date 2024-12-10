@@ -17,10 +17,11 @@ class CategoriaViewSet(viewsets.ModelViewSet):
         
         user = self.request.user
         # Trae las categorías del usuario autenticado y las categorías generales
-        return Categoria.objects.filter(usuario=user) | Categoria.objects.filter(usuario__isnull=True)
+        return Categoria.objects.filter(user=user) | Categoria.objects.filter(user__isnull=True)
     
     # modifica como va a crear el recurso
     def perform_create(self, serializer):
+        print(self.request.data.get('nombre'))
         # Asegura que la tarea creada se asocie al usuario autenticado
         serializer.save(user=self.request.user)
 
@@ -35,5 +36,9 @@ class TransaccionViewSet(viewsets.ModelViewSet):
         return Transaccion.objects.filter(user=user)  # Filtra las tareas por el usuario
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        categoria_id = self.request.data.get('categoria')
+        if categoria_id:
+            categoria = Categoria.objects.get(id=categoria_id)  # Obtener la categoría manualmente
+
+        serializer.save(user=self.request.user, categoria=categoria)
 

@@ -13,7 +13,7 @@ class TransaccionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaccion
-        fields = ('id', 'user','nombre', 'tipo', 'categoria', 'monto', 'descripcion', 'fecha')
+        fields = '__all__'
         read_only_fields = ('fecha',)
 
     def validate_monto(self, value):

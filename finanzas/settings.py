@@ -54,12 +54,14 @@ REST_FRAMEWORK = {
 # Configuración opcional para el tiempo de expiración de los tokens
 from datetime import timedelta
 
+
 SIMPLE_JWT = {
-    # define la duración de vida del token de acceso(autenticacion en cada solicitud de la api)
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30), 
-    # Los refresh tokens permiten solicitar nuevos access tokens cuando estos expiran, sin que el usuario deba iniciar sesión nuevamente.
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    
-    'ROTATE_REFRESH_TOKENS': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1), # define la duración de vida del token de acceso(autenticacion en cada solicitud de la api)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Los refresh tokens permiten solicitar nuevos access tokens cuando estos expiran, sin que el usuario deba iniciar sesión nuevamente.
+    'ROTATE_REFRESH_TOKENS': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
 }
 
 # Permitir todos los orígenes configurando CORS

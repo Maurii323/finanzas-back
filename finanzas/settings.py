@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os                   # para acceder a las variables de entorno de render
+import dj_database_url      # para leer las variables de entorno de la base de datos de render
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$!crnjaw-c1stasb*cm^-q5$75a09u)aa+l=h4^^r%&0d7-le6'
+#la secret key la da el hosting como variable de entorno
+SECRET_KEY = os.environ.get('SECRET KEY', default='your secret key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# si RENDER esta en las variables de entorno, significa que esta en produccion
+DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = []
+# si existe un host de render(si esta en produccion), lo agrega a los host permitidos
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -56,7 +64,7 @@ from datetime import timedelta
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1), # define la duración de vida del token de acceso(autenticacion en cada solicitud de la api)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30), # define la duración de vida del token de acceso(autenticacion en cada solicitud de la api)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Los refresh tokens permiten solicitar nuevos access tokens cuando estos expiran, sin que el usuario deba iniciar sesión nuevamente.
     'ROTATE_REFRESH_TOKENS': False,
     'ALGORITHM': 'HS256',
@@ -80,6 +88,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',    # configuracion de CORS
+    # agrega el servicio que utiliza render para servir contenido estatico
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'finanzas.urls'
@@ -106,7 +116,14 @@ WSGI_APPLICATION = 'finanzas.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
+# si esta en produccion, usa la base de datos postgres de render, si esta en desarrollo usa la sqlite3 local
+if not DEBUG:
+    DATABASES = {
+        # lee las variables de entorno de la base de datos de render
+        'default': dj_database_url.config(conn_max_age=600)
+    }
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
@@ -138,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True
 
@@ -149,6 +166,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+if not DEBUG:               # si el proyecto esta en produccion, configura los static files en render(whitenoise)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
